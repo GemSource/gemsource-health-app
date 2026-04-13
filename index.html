@@ -1,1 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>GemSource Health NZ</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Georgia,serif;background:#0c1414;color:#ddecea;min-height:100vh;padding-bottom:60px;}
+  button{cursor:pointer;}
+  input,select,textarea{font-family:monospace;}
 
+  /* HEADER */
+  .header{background:#0e1a1a;border-bottom:1px solid #1e2e2e;padding-bottom:0;}
+  .header-inner{max-width:780px;margin:0 auto;padding:28px 20px 20px;}
+  .header-label{font-family:monospace;font-size:10px;letter-spacing:3px;color:#3a6060;text-transform:uppercase;margin-bottom:10px;}
+  h1{font-size:26px;font-weight:normal;color:#e8f5f3;line-height:1.2;margin-bottom:6px;}
+  .header-sub{font-size:13px;color:#4a8a80;font-style:italic;margin-bottom:18px;}
+  .stat-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .stat-card{background:#0c1e1e;border:1px solid #1e2e2e;border-radius:6px;padding:10px 14px;}
+  .stat-label{font-family:monospace;font-size:10px;letter-spacing:2px;color:#3a6060;text-transform:uppercase;margin-bottom:3px;}
+  .stat-val{font-family:monospace;font-size:14px;color:#4ABFB0;}
+
+  /* TABS */
+  .tabs{max-width:780px;margin:0 auto;padding:0 20px;display:flex;flex-wrap:wrap;gap:2px;margin-top:4px;}
+  .tab-btn{background:transparent;color:#4a8a80;border:none;border-bottom:2px solid transparent;padding:10px 12px;font-size:11px;font-family:monospace;letter-spacing:1px;border-radius:4px 4px 0 0;transition:all 0.15s;}
+  .tab-btn.active{background:#4ABFB0;color:#0c1414;font-weight:bold;border-bottom:2px solid #4ABFB0;}
+
+  /* CONTENT */
+  .content{max-width:780px;margin:0 auto;padding:24px 20px 0;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* CARDS */
+  .card{background:#111c1c;border:1px solid #1e2e2e;border-radius:8px;padding:16px 18px;margin-bottom:16px;}
+  .card.gold-left{border-left:3px solid #E8C97A;}
+  .card.accent-left{border-left:3px solid #4ABFB0;}
+  .card.green-left{border-left:3px solid #7BC67A;}
+  .card.danger-bg{background:#140e0e;border-color:#2e1a1a;}
+
+  /* TYPOGRAPHY */
+  .section-title{font-size:18px;font-weight:normal;color:#e8f5f3;margin-bottom:6px;}
+  .section-hint{font-size:13px;color:#4a8080;font-style:italic;margin-bottom:20px;}
+  .sub-label{font-family:monospace;font-size:10px;letter-spacing:2px;color:#4ABFB0;text-transform:uppercase;margin-bottom:10px;}
+  .sub-label.gold{color:#E8C97A;}
+  .sub-label.danger{color:#E8655A;}
+
+  /* SEARCH TAB */
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .pill{background:#0c2020;border:1px solid #4ABFB033;border-radius:20px;padding:6px 14px;font-size:13px;color:#4ABFB0;font-family:monospace;}
+  .location-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1e2e2e;}
+  .location-row:last-child{border-bottom:none;}
+  .loc-priority{font-family:monospace;font-size:10px;min-width:70px;text-transform:uppercase;letter-spacing:1px;}
+  .loc-primary{color:#E8C97A;}
+  .loc-secondary{color:#445;}
+  .loc-text{font-size:13px;flex:1;}
+  .loc-primary-text{color:#ddecea;}
+  .loc-secondary-text{color:#6a9090;}
+  .loc-tag{font-family:monospace;font-size:10px;border-radius:4px;padding:3px 8px;}
+  .loc-tag.main{background:#E8C97A22;color:#E8C97A;}
+  .loc-tag.opt{background:#1e2e2e;color:#445;}
+  .search-hack{font-family:monospace;font-size:20px;color:#4ABFB0;margin:12px 0 8px;letter-spacing:2px;}
+  .search-hint{font-size:13px;color:#6a9090;line-height:1.7;}
+  .search-hint strong{color:#aaa;}
+  .tip-box{background:#0a1a1a;border:1px solid #1e2e2e;border-radius:6px;padding:12px 14px;margin-top:12px;}
+  .tip-label{font-size:11px;letter-spacing:2px;color:#4ABFB0;text-transform:uppercase;font-family:monospace;margin-bottom:8px;}
+  .tip-item{font-size:13px;color:#8abab5;padding:3px 0;}
+  .tip-highlight{margin-top:10px;font-size:13px;color:#E8C97A;font-style:italic;}
+
+  /* OUTREACH TAB */
+  .msg-card{margin-bottom:16px;}
+  .msg-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .msg-tag{font-family:monospace;font-size:11px;color:#4ABFB0;letter-spacing:1px;text-transform:uppercase;}
+  .msg-tone{font-size:11px;color:#4a7070;margin-top:3px;font-style:italic;}
+  .copy-btn{background:#0c2020;color:#4a8a80;border:1px solid #1e2e2e;border-radius:4px;padding:6px 12px;font-size:11px;font-family:monospace;letter-spacing:1px;transition:all 0.15s;}
+  .copy-btn.copied{background:#4ABFB022;color:#4ABFB0;border-color:#4ABFB0;}
+  .msg-body{background:#0a1a1a;border:1px solid #1e2e2e;border-radius:6px;padding:14px 16px;font-size:13px;color:#c0d8d5;line-height:1.8;white-space:pre-wrap;font-family:monospace;}
+  .msg-why{display:flex;gap:8px;align-items:flex-start;margin-top:10px;}
+  .msg-why-arrow{color:#4ABFB0;font-size:12px;}
+  .msg-why-text{font-size:12px;color:#4a8080;line-height:1.6;font-style:italic;}
+  .mistake-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1e1414;align-items:center;}
+  .mistake-row:last-child{border-bottom:none;}
+  .mistake-x{color:#E8655A;font-size:14px;}
+  .mistake-text{font-size:13px;color:#a07070;}
+
+  /* QUALIFY TAB */
+  .qualify-card{border-radius:8px;padding:16px 18px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;}
+  .qualify-card.normal{background:#111c1c;border:1px solid #1e2e2e;border-left:3px solid #4ABFB0;}
+  .qualify-card.highlight{background:#0e1e14;border:1px solid #2a5040;border-left:3px solid #7BC67A;}
+  .q-num{font-family:monospace;font-size:13px;min-width:28px;}
+  .q-num.normal{color:#4ABFB0;}
+  .q-num.highlight{color:#7BC67A;}
+  .q-label{font-size:13px;font-weight:bold;margin-bottom:6px;}
+  .q-label.normal{color:#c0d8d5;}
+  .q-label.highlight{color:#a0e0b0;}
+  .q-question{font-family:monospace;font-size:13px;color:#8ac8c0;background:#0a1a16;border-radius:4px;padding:8px 12px;line-height:1.6;}
+  .q-note{font-size:12px;color:#4a8070;margin-top:8px;font-style:italic;line-height:1.6;}
+
+  /* PITCH TAB */
+  .pitch-line{background:#0a1a1a;border:1px solid #1e2e2e;border-radius:6px;padding:16px;font-size:14px;color:#c0d8d5;line-height:1.9;font-style:italic;margin:12px 0 8px;}
+  .pitch-note{font-size:12px;color:#4a7070;}
+  .angle-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .angle-card{background:#111c1c;border:1px solid #1e2e2e;border-radius:8px;padding:16px 18px;}
+  .angle-icon{font-size:22px;margin-bottom:8px;}
+  .angle-label{font-size:14px;color:#4ABFB0;margin-bottom:5px;}
+  .angle-desc{font-size:12px;color:#6a9090;line-height:1.6;}
+  .voice-note-box{background:#0a1a0a;border:1px solid #2a3020;border-radius:6px;padding:12px 14px;font-family:monospace;font-size:13px;color:#a0c890;line-height:1.8;margin-top:10px;}
+
+  /* PIPELINE TAB */
+  .pipeline-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+  .clear-btn{background:transparent;border:1px solid #2e1a1a;border-radius:4px;color:#6a3030;font-size:11px;font-family:monospace;letter-spacing:1px;padding:5px 12px;}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+  .goal-card{background:#111c1c;border:1px solid #1e2e2e;border-radius:6px;padding:12px 14px;}
+  .goal-label{font-size:10px;letter-spacing:2px;color:#3a6060;text-transform:uppercase;font-family:monospace;margin-bottom:5px;}
+  .goal-val{font-size:18px;color:#4ABFB0;font-family:monospace;font-weight:bold;}
+  .goal-metric{font-size:12px;color:#5a8080;margin-top:3px;}
+  .add-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .add-input{flex:1 1 140px;background:#0a1a1a;border:1px solid #1e2e2e;border-radius:4px;padding:8px 12px;color:#ddecea;font-size:13px;font-family:monospace;outline:none;}
+  .add-select{background:#0a1a1a;border:1px solid #1e2e2e;border-radius:4px;padding:8px 10px;color:#ddecea;font-size:13px;font-family:monospace;outline:none;}
+  .add-notes{width:100%;margin-top:8px;background:#0a1a1a;border:1px solid #1e2e2e;border-radius:4px;padding:8px 12px;color:#ddecea;font-size:13px;font-family:monospace;outline:none;}
+  .add-btn{margin-top:10px;background:#4ABFB0;color:#0c1414;border:none;border-radius:4px;padding:8px 18px;font-size:12px;font-family:monospace;font-weight:bold;letter-spacing:1px;}
+  .candidate-card{background:#111c1c;border:1px solid #1e2e2e;border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+  .candidate-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+  .candidate-name{font-size:14px;color:#ddecea;flex:1;min-width:120px;}
+  .status-select{background:#0a1a1a;border-radius:4px;padding:5px 8px;font-size:12px;font-family:monospace;outline:none;cursor:pointer;}
+  .remove-btn{background:transparent;border:1px solid #2e1a1a;border-radius:4px;color:#6a3030;font-size:11px;padding:5px 8px;font-family:monospace;}
+  .notes-input{width:100%;background:#0a1616;border:1px solid #1e2e2e;border-radius:4px;padding:7px 10px;color:#7aaaa0;font-size:12px;font-family:monospace;outline:none;}
+  .empty-state{text-align:center;color:#3a6060;font-size:13px;padding:40px 0;font-style:italic;}
+
+  /* DAILY TAB */
+  .daily-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .reset-btn{background:transparent;border:1px solid #2a4040;border-radius:4px;color:#4a7070;font-size:11px;font-family:monospace;letter-spacing:1px;padding:5px 12px;}
+  .task-row{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #1e2e2e;cursor:pointer;}
+  .task-row:last-child{border-bottom:none;}
+  .task-check{width:16px;height:16px;min-width:16px;border-radius:3px;border:1px solid #2a4040;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all 0.15s;flex-shrink:0;}
+  .task-check.checked-gold{background:#E8C97A;border-color:#E8C97A;}
+  .task-check.checked-teal{background:#4ABFB0;border-color:#4ABFB0;}
+  .task-check-mark{color:#0c1414;font-size:10px;font-weight:bold;}
+  .task-text{font-size:13px;line-height:1.6;}
+  .task-text.done{text-decoration:line-through;color:#3a6060;}
+  .task-text.pending-gold{color:#c0c890;}
+  .task-text.pending-teal{color:#a0c8c0;}
+  .daily-progress{font-family:monospace;font-size:12px;}
+  .rule-box{background:#0e1e0e;border:1px solid #1e3020;border-left:3px solid #7BC67A;border-radius:8px;padding:14px 18px;margin-top:8px;}
+  .rule-label{font-family:monospace;font-size:11px;color:#7BC67A;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .rule-quote{font-size:14px;color:#80b890;line-height:1.8;font-style:italic;}
+  .rule-note{font-size:12px;color:#4a7060;line-height:1.7;margin-top:10px;}
+
+  /* FOOTER */
+  .footer{max-width:780px;margin:40px auto 0;padding:18px 20px;border-top:1px solid #1e2e2e;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .footer span{font-family:monospace;font-size:11px;color:#2a5050;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-label">GemSource Health · NZ Dental · Internal Confidential</div>
+    <h1>NZ Health Launching Playbook</h1>
+    <p class="header-sub">Phone-first · Speed over perfection · Conversations = pipeline</p>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-label">Target Market</div><div class="stat-val">AU → NZ Dentists</div></div>
+      <div class="stat-card"><div class="stat-label">Clients Signed</div><div class="stat-val">2 Active</div></div>
+      <div class="stat-card"><div class="stat-label">Goal (10 Days)</div><div class="stat-val">3–5 Shortlist</div></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('search')">SEARCH</button>
+    <button class="tab-btn" onclick="switchTab('outreach')">OUTREACH</button>
+    <button class="tab-btn" onclick="switchTab('qualify')">QUALIFY</button>
+    <button class="tab-btn" onclick="switchTab('pitch')">PITCH NZ</button>
+    <button class="tab-btn" onclick="switchTab('pipeline')">PIPELINE</button>
+    <button class="tab-btn" onclick="switchTab('daily')">DAILY PLAN</button>
+    <button class="tab-btn" onclick="switchTab('sourcing')" style="color:#C8A96E;">SOURCING ENGINE</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- SEARCH -->
+  <div id="tab-search" class="tab-panel active">
+    <h2 class="section-title">LinkedIn Search Setup</h2>
+    <p class="section-hint">Your primary channel. Use the mobile app. This is where your pipeline starts.</p>
+
+    <div class="card">
+      <div class="sub-label">Search Titles</div>
+      <div class="pill-row">
+        <span class="pill">Dentist</span>
+        <span class="pill">Associate Dentist</span>
+        <span class="pill">General Dentist</span>
+        <span class="pill">Dental Surgeon</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">Location Priority</div>
+      <div class="location-row">
+        <span class="loc-priority loc-primary">Primary</span>
+        <span class="loc-text loc-primary-text">Australia — all major cities</span>
+        <span class="loc-tag main">MAIN PIPELINE</span>
+      </div>
+      <div class="location-row">
+        <span class="loc-priority loc-secondary">Secondary</span>
+        <span class="loc-text loc-secondary-text">New Zealand</span>
+      </div>
+      <div class="location-row">
+        <span class="loc-priority loc-secondary">Later</span>
+        <span class="loc-text loc-secondary-text">United Kingdom</span>
+        <span class="loc-tag opt">OPTIONAL</span>
+      </div>
+    </div>
+
+    <div class="card accent-left">
+      <div class="sub-label">Mobile Search Hack</div>
+      <div class="search-hack">"Dentist Australia"</div>
+      <p class="search-hint">Type that into the LinkedIn search bar → filter: <strong>People</strong> → Location: <strong>Australia</strong></p>
+      <div class="tip-box">
+        <div class="tip-label">When viewing profiles, check:</div>
+        <div class="tip-item">→ Years of experience</div>
+        <div class="tip-item">→ Current clinic type</div>
+        <div class="tip-item">→ Career progression pattern</div>
+        <div class="tip-highlight">🎯 0–5 years experience = most open to relocation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTREACH -->
+  <div id="tab-outreach" class="tab-panel">
+    <h2 class="section-title">Outreach Messaging</h2>
+    <p class="section-hint">Copy-paste ready. Natural and curiosity-driven — never salesy.</p>
+
+    <div class="card msg-card">
+      <div class="msg-header">
+        <div><div class="msg-tag">First DM / Connection Note</div><div class="msg-tone">Tone: Cold → Curious</div></div>
+        <button class="copy-btn" onclick="copyMsg(this, 'Hey [Name], quick one — I\'m working with a couple of dental clinics in NZ that are hiring right now. Some are open to relocating dentists from Australia.\n\nWould you ever consider a move for the right opportunity?')">COPY</button>
+      </div>
+      <div class="msg-body">Hey [Name], quick one — I'm working with a couple of dental clinics in NZ that are hiring right now. Some are open to relocating dentists from Australia.
+
+Would you ever consider a move for the right opportunity?</div>
+      <div class="msg-why"><span class="msg-why-arrow">↳</span><span class="msg-why-text">Low pressure, not salesy, opens a curiosity loop — gets replies.</span></div>
+    </div>
+
+    <div class="card msg-card">
+      <div class="msg-header">
+        <div><div class="msg-tag">Follow-Up (No Reply After 1–2 Days)</div><div class="msg-tone">Tone: Soft Nudge</div></div>
+        <button class="copy-btn" onclick="copyMsg(this, 'Out of curiosity — is NZ something you\'d ever consider down the track, or not really on your radar?')">COPY</button>
+      </div>
+      <div class="msg-body">Out of curiosity — is NZ something you'd ever consider down the track, or not really on your radar?</div>
+      <div class="msg-why"><span class="msg-why-arrow">↳</span><span class="msg-why-text">Binary question. Easy to answer. Almost always gets a response.</span></div>
+    </div>
+
+    <div class="card msg-card">
+      <div class="msg-header">
+        <div><div class="msg-tag">They Replied 'Maybe / Depends'</div><div class="msg-tone">Tone: Unlock Mode</div></div>
+        <button class="copy-btn" onclick="copyMsg(this, 'Nice — that\'s usually how it starts.\n\nWhat would need to be right for you to actually consider a move?')">COPY</button>
+      </div>
+      <div class="msg-body">Nice — that's usually how it starts.
+
+What would need to be right for you to actually consider a move?</div>
+      <div class="msg-why"><span class="msg-why-arrow">↳</span><span class="msg-why-text">This question is gold. It unlocks their real motivations and tells you exactly how to close them.</span></div>
+    </div>
+
+    <div class="card msg-card gold-left">
+      <div class="msg-header">
+        <div><div class="msg-tag" style="color:#E8C97A;">Voice Note Script</div><div class="msg-tone">Tone: Power Move</div></div>
+        <button class="copy-btn" onclick="copyMsg(this, 'Hey mate — easier to explain via voice. The clinics we\'re working with in NZ are actively hiring and open to relocating dentists. Thought you could be a strong fit based on your background…')">COPY</button>
+      </div>
+      <div class="msg-body">Hey mate — easier to explain via voice. The clinics we're working with in NZ are actively hiring and open to relocating dentists. Thought you could be a strong fit based on your background…</div>
+      <div class="msg-why"><span class="msg-why-arrow" style="color:#E8C97A;">↳</span><span class="msg-why-text">Builds trust fast, differentiates instantly, feels human. Most recruiters won't do this — that's why it works.</span></div>
+    </div>
+
+    <div class="card danger-bg">
+      <div class="sub-label danger">Mistakes to Avoid</div>
+      <div style="margin-top:10px;">
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Don't send long messages</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Don't pitch roles too early</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Don't over-qualify cold leads</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Don't wait for perfect candidates</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUALIFY -->
+  <div id="tab-qualify" class="tab-panel">
+    <h2 class="section-title">Qualification Script</h2>
+    <p class="section-hint">You're exploring, not interrogating. Keep it casual. Run this in order.</p>
+
+    <div class="qualify-card normal">
+      <div class="q-num normal">01</div>
+      <div>
+        <div class="q-label normal">Motivation</div>
+        <div class="q-question">"What's got you even slightly open to something new?"</div>
+        <div class="q-note">Listen for push factors — burnout, pay, culture, growth ceiling.</div>
+      </div>
+    </div>
+    <div class="qualify-card normal">
+      <div class="q-num normal">02</div>
+      <div>
+        <div class="q-label normal">Current Situation</div>
+        <div class="q-question">"How are you finding your current clinic?"</div>
+        <div class="q-note">Let them vent. Pain = opportunity.</div>
+      </div>
+    </div>
+    <div class="qualify-card normal">
+      <div class="q-num normal">03</div>
+      <div>
+        <div class="q-label normal">Salary / Earnings</div>
+        <div class="q-question">"Out of curiosity, what are you currently earning roughly?"</div>
+        <div class="q-note">Never skip this. Misaligned salary = wasted time for everyone.</div>
+      </div>
+    </div>
+    <div class="qualify-card normal">
+      <div class="q-num normal">04</div>
+      <div>
+        <div class="q-label normal">Expectations</div>
+        <div class="q-question">"What would a move need to look like financially?"</div>
+        <div class="q-note">Sets your brief benchmark before you pitch anything.</div>
+      </div>
+    </div>
+    <div class="qualify-card normal">
+      <div class="q-num normal">05</div>
+      <div>
+        <div class="q-label normal">Timing</div>
+        <div class="q-question">"If the right role came up, when would you realistically move?"</div>
+        <div class="q-note">Separates warm leads from future pipeline.</div>
+      </div>
+    </div>
+    <div class="qualify-card highlight">
+      <div class="q-num highlight">06</div>
+      <div>
+        <div class="q-label highlight">Risk Check ⚠</div>
+        <div class="q-question" style="background:#0a1e14;">"What would hold you back from actually making the move?"</div>
+        <div class="q-note" style="color:#4a9070;">THIS is where placements are won or lost. Uncover it now, not at offer stage.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PITCH NZ -->
+  <div id="tab-pitch" class="tab-panel">
+    <h2 class="section-title">NZ Relocation Pitch</h2>
+    <p class="section-hint">Most recruiters pitch the job. You pitch the life upgrade. That's your edge.</p>
+
+    <div class="card">
+      <div class="sub-label">Your Pitch Line (Use Naturally)</div>
+      <div class="pitch-line">"A lot of the roles we're working on offer better lifestyle balance, strong earnings, and a different pace compared to metro clinics here. Some dentists are using it as a 2–3 year move for experience + lifestyle."</div>
+      <div class="pitch-note">Don't memorise it word-for-word — internalise the angles below and say it naturally.</div>
+    </div>
+
+    <div class="angle-grid">
+      <div class="angle-card"><div class="angle-icon">🌿</div><div class="angle-label">Lifestyle</div><div class="angle-desc">Better work-life balance vs metro AU clinics</div></div>
+      <div class="angle-card"><div class="angle-icon">💰</div><div class="angle-label">Financial Upside</div><div class="angle-desc">Strong earnings, often above AUS equivalent</div></div>
+      <div class="angle-card"><div class="angle-icon">🔥</div><div class="angle-label">Less Burnout</div><div class="angle-desc">Different pace, smaller communities, sustainable</div></div>
+      <div class="angle-card"><div class="angle-icon">🗺</div><div class="angle-label">Adventure</div><div class="angle-desc">2–3 year move framed as experience + lifestyle upgrade</div></div>
+    </div>
+
+    <div class="card gold-left" style="margin-top:16px;">
+      <div class="sub-label gold">Voice Note — Power Move</div>
+      <p style="font-size:13px;color:#8a9070;margin-top:8px;line-height:1.7;">When someone is warm and engaged, switch to a voice note. Most recruiters won't do this. That's exactly why you should.</p>
+      <div class="voice-note-box">"Hey mate — easier to explain via voice. The clinics we're working with in NZ are actively hiring and open to relocating dentists. Thought you could be a strong fit based on your background…"</div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div id="tab-pipeline" class="tab-panel">
+    <div class="pipeline-header">
+      <h2 class="section-title">Candidate Pipeline</h2>
+      <button class="clear-btn" onclick="clearAllCandidates()">CLEAR ALL</button>
+    </div>
+    <p class="section-hint" id="pipeline-hint">Loading...</p>
+
+    <div class="goal-grid">
+      <div class="goal-card"><div class="goal-label">10-Day Goal</div><div class="goal-val">100–200</div><div class="goal-metric">Connection requests</div></div>
+      <div class="goal-card"><div class="goal-label">10-Day Goal</div><div class="goal-val">30–50</div><div class="goal-metric">Replies received</div></div>
+      <div class="goal-card"><div class="goal-label">10-Day Goal</div><div class="goal-val">10–15</div><div class="goal-metric">Qualified dentists</div></div>
+      <div class="goal-card"><div class="goal-label">10-Day Goal</div><div class="goal-val">3–5</div><div class="goal-metric">Strong shortlist</div></div>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">Add Candidate</div>
+      <div class="add-row">
+        <input class="add-input" id="new-name" placeholder="Full name" onkeydown="if(event.key==='Enter')addCandidate()"/>
+        <select class="add-select" id="new-status">
+          <option>Contacted</option>
+          <option>Replied</option>
+          <option>Qualified</option>
+          <option>Strong</option>
+          <option>Not Fit</option>
+        </select>
+      </div>
+      <input class="add-notes" id="new-notes" placeholder="Notes (salary, timeline, open to NZ...)"/>
+      <button class="add-btn" onclick="addCandidate()">+ ADD</button>
+    </div>
+
+    <div id="candidate-list"></div>
+  </div>
+
+  <!-- DAILY PLAN -->
+  <div id="tab-daily" class="tab-panel">
+    <div class="daily-header">
+      <div>
+        <h2 class="section-title">Daily Execution Plan</h2>
+        <p class="section-hint" style="margin-bottom:0;">No fluff. Start tonight. Volume + speed + conversation = pipeline.</p>
+      </div>
+      <button class="reset-btn" onclick="resetDay()">RESET DAY</button>
+    </div>
+
+    <div class="card" style="border-left:3px solid #E8C97A;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div>
+          <div style="font-family:monospace;font-size:11px;color:#E8C97A;letter-spacing:2px;text-transform:uppercase;">TONIGHT</div>
+          <div style="font-size:14px;color:#c0d8d5;margin-top:3px;">First 60 Minutes</div>
+        </div>
+        <div class="daily-progress" id="prog-0" style="color:#3a6060;">0/3</div>
+      </div>
+      <div class="task-row" onclick="toggleTask('t0','gold')">
+        <div class="task-check" id="check-t0"><span class="task-check-mark" style="display:none;">✓</span></div>
+        <span class="task-text pending-gold" id="text-t0">20 profile searches on LinkedIn</span>
+      </div>
+      <div class="task-row" onclick="toggleTask('t1','gold')">
+        <div class="task-check" id="check-t1"><span class="task-check-mark" style="display:none;">✓</span></div>
+        <span class="task-text pending-gold" id="text-t1">10 connection requests sent</span>
+      </div>
+      <div class="task-row" onclick="toggleTask('t2','gold')">
+        <div class="task-check" id="check-t2"><span class="task-check-mark" style="display:none;">✓</span></div>
+        <span class="task-text pending-gold" id="text-t2">5 outreach messages sent</span>
+      </div>
+    </div>
+
+    <div class="card" style="border-left:3px solid #4ABFB0;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div>
+          <div style="font-family:monospace;font-size:11px;color:#4ABFB0;letter-spacing:2px;text-transform:uppercase;">DAILY</div>
+          <div style="font-size:14px;color:#c0d8d5;margin-top:3px;">Ongoing Targets</div>
+        </div>
+        <div class="daily-progress" id="prog-1" style="color:#3a6060;">0/3</div>
+      </div>
+      <div class="task-row" onclick="toggleTask('t3','teal')">
+        <div class="task-check" id="check-t3"><span class="task-check-mark" style="display:none;">✓</span></div>
+        <span class="task-text pending-teal" id="text-t3">20–40 profiles viewed</span>
+      </div>
+      <div class="task-row" onclick="toggleTask('t4','teal')">
+        <div class="task-check" id="check-t4"><span class="task-check-mark" style="display:none;">✓</span></div>
+        <span class="task-text pending-teal" id="text-t4">15–25 connection requests</span>
+      </div>
+      <div class="task-row" onclick="toggleTask('t5','teal')">
+        <div class="task-check" id="check-t5"><span class="task-check-mark" style="display:none;">✓</span></div>
+        <span class="task-text pending-teal" id="text-t5">10+ new conversations started</span>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-label">The Rule</div>
+      <p class="rule-quote">"Volume + speed + conversation = pipeline."</p>
+      <p class="rule-note">You don't need a laptop, a perfect CRM, or a website. Right now you need conversations with dentists. That's it.</p>
+    </div>
+  </div>
+
+  <!-- SOURCING ENGINE -->
+  <div id="tab-sourcing" class="tab-panel">
+    <h2 class="section-title">Sourcing Engine</h2>
+    <p class="section-hint">Part One of your GemSource Health NZ Playbook — your daily revenue-generating machine.</p>
+
+    <!-- Core Principle -->
+    <div class="card" style="border-left:3px solid #C8A96E;margin-bottom:16px;">
+      <div class="sub-label" style="color:#C8A96E;">Core Recruitment Principle</div>
+      <p style="font-size:14px;color:#c0d0b0;line-height:1.8;margin-top:10px;font-style:italic;">"Do not just find dentists. Find <strong>movable</strong> dentists. The commercial edge is identifying clinicians who are open to change, open to regional work, open to relocation, and looking for growth, mentorship, or a better long-term fit."</p>
+    </div>
+
+    <!-- Market Focus -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label">Candidate Market Focus</div>
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;color:#4ABFB0;font-family:monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Primary Markets</div>
+        <div style="font-size:13px;color:#c0d8d5;padding:4px 0;">→ NZ-based dentists for NZ clinics</div>
+        <div style="font-size:13px;color:#c0d8d5;padding:4px 0;">→ AU-based dentists open to relocating to NZ</div>
+        <div style="font-size:12px;color:#4ABFB0;font-family:monospace;letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px;">Target Candidate Types</div>
+        <div style="font-size:13px;color:#c0d8d5;padding:4px 0;">→ Fresh graduates (BDS or DDS qualified)</div>
+        <div style="font-size:13px;color:#c0d8d5;padding:4px 0;">→ Early-career dentists (0–3 years post-grad)</div>
+        <div style="font-size:13px;color:#c0d8d5;padding:4px 0;">→ Junior associates seeking better mentorship, culture, or location</div>
+      </div>
+    </div>
+
+    <!-- Channel Priority -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label">Channel Priority</div>
+      <div style="margin-top:12px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1e2e2e;">
+          <div style="font-family:monospace;font-size:10px;color:#E8C97A;min-width:60px;text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Tier 1</div>
+          <div><div style="font-size:13px;color:#ddecea;">Clinic-Driven Sourcing · LinkedIn Sourcing</div><div style="font-size:11px;color:#4a7070;margin-top:2px;font-style:italic;">Highest immediate commercial value — spend most of your daily time here</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1e2e2e;">
+          <div style="font-family:monospace;font-size:10px;color:#7aaaa0;min-width:60px;text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Tier 2</div>
+          <div><div style="font-size:13px;color:#a0c0b8;">Job Boards · Networks / Communities / Referrals</div><div style="font-size:11px;color:#4a7070;margin-top:2px;font-style:italic;">Strong support channels</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;">
+          <div style="font-family:monospace;font-size:10px;color:#5a7070;min-width:60px;text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Tier 3</div>
+          <div><div style="font-size:13px;color:#7a9090;">Universities / Graduate Pipeline</div><div style="font-size:11px;color:#4a7070;margin-top:2px;font-style:italic;">Long-term pipeline — 6–18 month horizon</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Good vs Red Flag Candidates -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div class="card" style="border-left:3px solid #7BC67A;">
+        <div class="sub-label" style="color:#7BC67A;">Strong Fit Signals</div>
+        <div style="margin-top:10px;">
+          <div style="font-size:12px;color:#80b890;padding:4px 0;line-height:1.5;">Limited progression in current role</div>
+          <div style="font-size:12px;color:#80b890;padding:4px 0;line-height:1.5;">Previously relocated — proven mobility</div>
+          <div style="font-size:12px;color:#80b890;padding:4px 0;line-height:1.5;">Wants more autonomy or mentorship</div>
+          <div style="font-size:12px;color:#80b890;padding:4px 0;line-height:1.5;">Interested in NZ long-term</div>
+          <div style="font-size:12px;color:#80b890;padding:4px 0;line-height:1.5;">Regional background or lifestyle focus</div>
+          <div style="font-size:12px;color:#80b890;padding:4px 0;line-height:1.5;">Asks thoughtful questions about culture</div>
+        </div>
+      </div>
+      <div class="card" style="background:#140e0e;border:1px solid #2e1a1a;border-left:3px solid #E8655A;">
+        <div class="sub-label" style="color:#E8655A;">Red Flags</div>
+        <div style="margin-top:10px;">
+          <div style="font-size:12px;color:#a07070;padding:4px 0;line-height:1.5;">Completely city-locked, zero flexibility</div>
+          <div style="font-size:12px;color:#a07070;padding:4px 0;line-height:1.5;">Only wants the 'perfect role'</div>
+          <div style="font-size:12px;color:#a07070;padding:4px 0;line-height:1.5;">Purely money-driven</div>
+          <div style="font-size:12px;color:#a07070;padding:4px 0;line-height:1.5;">Vague on motivations or slow to engage</div>
+          <div style="font-size:12px;color:#a07070;padding:4px 0;line-height:1.5;">No thought around DCNZ registration</div>
+          <div style="font-size:12px;color:#a07070;padding:4px 0;line-height:1.5;">Escaping a bad situation — not a genuine move</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engine 1: Clinic-Driven -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label" style="color:#C8A96E;">Engine 1 — Clinic-Driven Sourcing</div>
+      <p style="font-size:12px;color:#8a9070;font-style:italic;margin:6px 0 12px;">Best immediate revenue engine — real vacancy, real brief, real urgency.</p>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Step-by-Step</div>
+      <div style="font-size:13px;color:#c0d8d5;padding:6px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;">01</span> &nbsp;Confirm the role properly — level, AU candidates considered, relocation support, mentorship, salary, timeline</div>
+      <div style="font-size:13px;color:#c0d8d5;padding:6px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;">02</span> &nbsp;Write an internal targeting note before outreach begins</div>
+      <div style="font-size:13px;color:#c0d8d5;padding:6px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;">03</span> &nbsp;Build target list — NZ juniors, AU open-to-relocation, recent grads, GSE bench</div>
+      <div style="font-size:13px;color:#c0d8d5;padding:6px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;">04</span> &nbsp;Lead outreach with candidate's interests — not the full role pitch</div>
+      <div style="font-size:13px;color:#c0d8d5;padding:6px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;">05</span> &nbsp;Screen for mobility — location flexibility, support needed, timing, real motivations</div>
+      <div style="font-size:13px;color:#c0d8d5;padding:6px 0;"><span style="color:#C8A96E;font-family:monospace;">06</span> &nbsp;Only shortlist genuinely interested, movable, credible, aligned candidates</div>
+      <div style="background:#140e0e;border:1px solid #2a1a1a;border-radius:6px;padding:10px 12px;margin-top:12px;">
+        <div style="font-size:11px;color:#E8655A;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Common Mistakes</div>
+        <div style="font-size:12px;color:#a07070;padding:2px 0;">✕ Sourcing before the brief is fully clear</div>
+        <div style="font-size:12px;color:#a07070;padding:2px 0;">✕ Assuming all junior dentists will relocate</div>
+        <div style="font-size:12px;color:#a07070;padding:2px 0;">✕ Overselling the opportunity too early</div>
+        <div style="font-size:12px;color:#a07070;padding:2px 0;">✕ Chasing candidates who aren't emotionally ready to move</div>
+      </div>
+    </div>
+
+    <!-- Engine 2: LinkedIn -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label" style="color:#4ABFB0;">Engine 2 — LinkedIn Sourcing</div>
+      <p style="font-size:12px;color:#4a8080;font-style:italic;margin:6px 0 12px;">Precision targeting tool — not a spam tool. Best for 1–3 year dentists and AU-to-NZ sourcing.</p>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">What to Look For</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:4px 0;">→ 12–24 months in current role — approaching the natural 'restless' window</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:4px 0;">→ Movement history — previously relocated or changed cities</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:4px 0;">→ Signs of being under-mentored or under-challenged</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:4px 0;">→ Interest in growth, development, or regional work in their profile</div>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;">Candidate Tiers</div>
+      <div style="background:#0a1a1a;border-radius:6px;padding:10px 12px;">
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #1e2e2e;"><span style="font-family:monospace;font-size:11px;color:#7BC67A;min-width:60px;">A-TIER</span><span style="font-size:12px;color:#80b890;">Right level, looks movable — reach out now</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #1e2e2e;"><span style="font-family:monospace;font-size:11px;color:#E8C97A;min-width:60px;">B-TIER</span><span style="font-size:12px;color:#a0a080;">Possibly suitable, mobility unclear — warm touch, long-term nurture</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><span style="font-family:monospace;font-size:11px;color:#555;min-width:60px;">C-TIER</span><span style="font-size:12px;color:#5a7070;">Too senior, city-locked, or weak fit — do not prioritise</span></div>
+      </div>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;">Follow-Up Sequence</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">1. Connection request</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">2. First follow-up message (1–2 days after acceptance)</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">3. Final follow-up — if still no reply, move on</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">4. If they engage — progress to phone screen quickly, don't let warm leads go cold</div>
+    </div>
+
+    <!-- Engine 3: University -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label">Engine 3 — University / Graduate Pipeline</div>
+      <p style="font-size:12px;color:#4a8080;font-style:italic;margin:6px 0 12px;">Not your fastest engine — a long-term competitive advantage. Builds 6–18 month pipelines.</p>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Target Schools</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ University of Otago — Faculty of Dentistry (NZ)</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ University of Melbourne Dental School</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ University of Sydney — Faculty of Dentistry</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Griffith University, James Cook University, Charles Sturt University</div>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;">How to Position Yourself</div>
+      <div style="background:#0c2020;border:1px solid #1e3030;border-radius:6px;padding:10px 12px;font-size:13px;color:#7aaaa0;line-height:1.8;">
+        Don't lead with "I'm a recruiter with jobs." Lead with: helping graduates understand career pathways, choose the right first clinic, and navigate AU vs NZ options.
+      </div>
+    </div>
+
+    <!-- Engine 4: Job Boards -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label">Engine 4 — Job Boards & Market Activity</div>
+      <p style="font-size:12px;color:#4a8080;font-style:italic;margin:6px 0 12px;">Use ads as market intelligence — not just a candidate source.</p>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Boards to Track</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Seek NZ — primary NZ dental board</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Trade Me Jobs — NZ general board with healthcare listings</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Seek AU — for sourcing AU dentists open to NZ</div>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;">What to Look For in Ads</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Repeat advertisers — clinics re-posting the same role signal retention issues</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Regional roles — high value, harder to fill, good sourcing opportunity</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Cross-reference on LinkedIn — check current dentists and recent departures at that clinic</div>
+    </div>
+
+    <!-- Engine 5: Networks -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label">Engine 5 — Networks, Communities & Referrals</div>
+      <p style="font-size:12px;color:#4a8080;font-style:italic;margin:6px 0 12px;">Candidates trust peers more than cold recruiters. Powerful when worked consistently.</p>
+      <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Communities to Engage</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ NZ Dental Association (NZDA)</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Australian Dental Association (ADA)</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Dental student societies at target universities</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Facebook groups for NZ dentists and dental graduates</div>
+      <div style="font-size:13px;color:#a0c0b8;padding:3px 0;">→ Koira Consulting NZ — partnership referral pipeline</div>
+      <div style="background:#0c2020;border:1px solid #1e3030;border-radius:6px;padding:10px 12px;margin-top:12px;font-size:13px;color:#7aaaa0;line-height:1.8;">
+        <strong style="color:#4ABFB0;">Rule:</strong> Observe before engaging. Add value before asking for anything. Once trust exists, ask: "Who else in your cohort is open to regional work or considering NZ?"
+      </div>
+    </div>
+
+    <!-- Daily & Weekly Rhythm -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label" style="color:#C8A96E;">Daily & Weekly Targets</div>
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Daily</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+          <div style="background:#0a1a1a;border-radius:6px;padding:10px 12px;"><div style="font-family:monospace;font-size:14px;color:#4ABFB0;">10–15</div><div style="font-size:11px;color:#4a7070;margin-top:3px;">LinkedIn outreach messages</div></div>
+          <div style="background:#0a1a1a;border-radius:6px;padding:10px 12px;"><div style="font-family:monospace;font-size:14px;color:#4ABFB0;">5–10</div><div style="font-size:11px;color:#4a7070;margin-top:3px;">Candidate profile reviews</div></div>
+          <div style="background:#0a1a1a;border-radius:6px;padding:10px 12px;"><div style="font-family:monospace;font-size:14px;color:#4ABFB0;">3–5</div><div style="font-size:11px;color:#4a7070;margin-top:3px;">Candidate conversations</div></div>
+          <div style="background:#0a1a1a;border-radius:6px;padding:10px 12px;"><div style="font-family:monospace;font-size:14px;color:#4ABFB0;">5–10</div><div style="font-size:11px;color:#4a7070;margin-top:3px;">New candidates in GSE</div></div>
+        </div>
+        <div style="font-size:12px;color:#4ABFB0;font-family:monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Weekly</div>
+        <div style="font-size:13px;color:#a0c0b8;padding:4px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;font-size:11px;">MON</span> &nbsp; Review live roles · build LinkedIn list · review job boards</div>
+        <div style="font-size:13px;color:#a0c0b8;padding:4px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;font-size:11px;">TUE</span> &nbsp; LinkedIn outreach block · screening · phone screens · GSE updates</div>
+        <div style="font-size:13px;color:#a0c0b8;padding:4px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;font-size:11px;">WED</span> &nbsp; Clinic calls · university/community outreach · nurture follow-ups</div>
+        <div style="font-size:13px;color:#a0c0b8;padding:4px 0;border-bottom:1px solid #1e2e2e;"><span style="color:#C8A96E;font-family:monospace;font-size:11px;">THU</span> &nbsp; Second-round outreach · qualification calls · role-to-candidate matching</div>
+        <div style="font-size:13px;color:#a0c0b8;padding:4px 0;"><span style="color:#C8A96E;font-family:monospace;font-size:11px;">FRI</span> &nbsp; Pipeline review · GSE cleanup · channel review · next week targets</div>
+      </div>
+    </div>
+
+    <!-- Non-Negotiable Mistakes -->
+    <div class="card danger-bg" style="margin-bottom:16px;">
+      <div class="sub-label danger">Critical Mistakes to Avoid</div>
+      <div style="margin-top:10px;">
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Chasing everyone — volume without qualification wastes time and damages reputation</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Focusing on qualifications only — a qualified dentist who won't move is not a candidate</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Taking vague clinic briefs to market — no brief, no sourcing</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Overselling relocation — it's a major life decision, treat it seriously</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Being reactive — build pipeline every week, not only when a brief lands</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Poor GSE discipline — unlogged pipeline is invisible pipeline</span></div>
+        <div class="mistake-row"><span class="mistake-x">✕</span><span class="mistake-text">Ignoring nurture candidates — many placements come from candidates nurtured over weeks</span></div>
+      </div>
+    </div>
+
+    <!-- GSE Tags Reference -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sub-label">GSE Required Tags</div>
+      <div style="margin-top:12px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="background:#0c2020;border:1px solid #4ABFB033;border-radius:4px;padding:5px 10px;font-size:12px;color:#4ABFB0;font-family:monospace;">NZ Local</span>
+          <span style="background:#0c2020;border:1px solid #4ABFB033;border-radius:4px;padding:5px 10px;font-size:12px;color:#4ABFB0;font-family:monospace;">AU to NZ</span>
+          <span style="background:#0c2020;border:1px solid #4ABFB033;border-radius:4px;padding:5px 10px;font-size:12px;color:#4ABFB0;font-family:monospace;">Graduate</span>
+          <span style="background:#0c2020;border:1px solid #4ABFB033;border-radius:4px;padding:5px 10px;font-size:12px;color:#4ABFB0;font-family:monospace;">Junior Dentist</span>
+          <span style="background:#0c2020;border:1px solid #4ABFB033;border-radius:4px;padding:5px 10px;font-size:12px;color:#4ABFB0;font-family:monospace;">Regional Open</span>
+          <span style="background:#0c2020;border:1px solid #4ABFB033;border-radius:4px;padding:5px 10px;font-size:12px;color:#4ABFB0;font-family:monospace;">Metro Only</span>
+          <span style="background:#0c2020;border:1px solid #7BC67A33;border-radius:4px;padding:5px 10px;font-size:12px;color:#7BC67A;font-family:monospace;">Move Ready</span>
+          <span style="background:#0c2020;border:1px solid #E8C97A33;border-radius:4px;padding:5px 10px;font-size:12px;color:#E8C97A;font-family:monospace;">Nurture</span>
+          <span style="background:#0c2020;border:1px solid #7BC67A33;border-radius:4px;padding:5px 10px;font-size:12px;color:#7BC67A;font-family:monospace;">Active</span>
+          <span style="background:#140e0e;border:1px solid #E8655A33;border-radius:4px;padding:5px 10px;font-size:12px;color:#E8655A;font-family:monospace;">Do Not Progress</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>GemSource Health NZ · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="355e505b5154595975525058465a404756501b565a581b5440">[email&#160;protected]</a></span>
+  <span>April 2026</span>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── TAB SWITCHING ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── COPY MESSAGE ──
+function copyMsg(btn, text) {
+  navigator.clipboard.writeText(text).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  btn.textContent = '✓ COPIED';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+}
+
+// ── STATUS COLOURS ──
+function statusColor(s) {
+  return { Contacted:'#555', Replied:'#E8C97A', Qualified:'#4ABFB0', Strong:'#7BC67A', 'Not Fit':'#444' }[s] || '#555';
+}
+
+// ── CANDIDATE STORAGE ──
+const DEFAULT_CANDIDATES = [
+  { name: 'John Smith', status: 'Qualified', notes: 'Open to NZ, wants $140k+, 3 month timeline' }
+];
+
+function loadCandidates() {
+  try { return JSON.parse(localStorage.getItem('gs_nz_candidates')) || DEFAULT_CANDIDATES; }
+  catch { return DEFAULT_CANDIDATES; }
+}
+
+function saveCandidates(list) {
+  localStorage.setItem('gs_nz_candidates', JSON.stringify(list));
+}
+
+function renderCandidates() {
+  const list = loadCandidates();
+  const container = document.getElementById('candidate-list');
+  const hint = document.getElementById('pipeline-hint');
+  hint.textContent = list.length + ' candidate' + (list.length !== 1 ? 's' : '') + ' in pipeline · Saves automatically';
+
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty-state">No candidates yet — add your first one above.</div>';
+    return;
+  }
+
+  container.innerHTML = list.map((c, i) => `
+    <div class="candidate-card">
+      <div class="candidate-row">
+        <div class="candidate-name">${escHtml(c.name)}</div>
+        <select class="status-select" style="border:1px solid ${statusColor(c.status)}55;color:${statusColor(c.status)};" onchange="updateStatus(${i},this.value)">
+          ${['Contacted','Replied','Qualified','Strong','Not Fit'].map(s => `<option${s===c.status?' selected':''}>${s}</option>`).join('')}
+        </select>
+        <button class="remove-btn" onclick="removeCandidate(${i})">✕</button>
+      </div>
+      <input class="notes-input" value="${escHtml(c.notes)}" placeholder="Add notes..." oninput="updateNotes(${i},this.value)"/>
+    </div>
+  `).join('');
+}
+
+function escHtml(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function addCandidate() {
+  const name = document.getElementById('new-name').value.trim();
+  if (!name) return;
+  const status = document.getElementById('new-status').value;
+  const notes = document.getElementById('new-notes').value.trim();
+  const list = loadCandidates();
+  list.push({ name, status, notes });
+  saveCandidates(list);
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-notes').value = '';
+  document.getElementById('new-status').value = 'Contacted';
+  renderCandidates();
+}
+
+function removeCandidate(i) {
+  const list = loadCandidates();
+  list.splice(i, 1);
+  saveCandidates(list);
+  renderCandidates();
+}
+
+function updateStatus(i, val) {
+  const list = loadCandidates();
+  list[i].status = val;
+  saveCandidates(list);
+  renderCandidates();
+}
+
+function updateNotes(i, val) {
+  const list = loadCandidates();
+  list[i].notes = val;
+  saveCandidates(list);
+}
+
+function clearAllCandidates() {
+  if (confirm('Clear all candidates?')) { saveCandidates([]); renderCandidates(); }
+}
+
+// ── DAILY TASKS ──
+const TASK_GROUPS = [[0,1,2],[3,4,5]];
+
+function loadDaily() {
+  try { return JSON.parse(localStorage.getItem('gs_nz_daily')) || {}; }
+  catch { return {}; }
+}
+
+function saveDaily(state) {
+  localStorage.setItem('gs_nz_daily', JSON.stringify(state));
+}
+
+function toggleTask(id, color) {
+  const state = loadDaily();
+  state[id] = !state[id];
+  saveDaily(state);
+  applyTaskState(id, state[id], color);
+  updateProgress();
+}
+
+function applyTaskState(id, checked, color) {
+  const check = document.getElementById('check-' + id);
+  const text = document.getElementById('text-' + id);
+  const mark = check.querySelector('.task-check-mark');
+  if (checked) {
+    check.className = 'task-check checked-' + color;
+    mark.style.display = 'block';
+    text.className = 'task-text done';
+  } else {
+    check.className = 'task-check';
+    mark.style.display = 'none';
+    text.className = 'task-text pending-' + color;
+  }
+}
+
+function updateProgress() {
+  const state = loadDaily();
+  TASK_GROUPS.forEach((group, gi) => {
+    const done = group.filter(n => state['t' + n]).length;
+    const el = document.getElementById('prog-' + gi);
+    el.textContent = done + '/' + group.length;
+    el.style.color = done === group.length ? '#7BC67A' : '#3a6060';
+  });
+}
+
+function resetDay() {
+  saveDaily({});
+  ['t0','t1','t2'].forEach(id => applyTaskState(id, false, 'gold'));
+  ['t3','t4','t5'].forEach(id => applyTaskState(id, false, 'teal'));
+  updateProgress();
+}
+
+function initDaily() {
+  const state = loadDaily();
+  ['t0','t1','t2'].forEach(id => { if (state[
